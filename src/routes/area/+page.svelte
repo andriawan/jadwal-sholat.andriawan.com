@@ -20,6 +20,7 @@
 	});
 	export function goTo(id: String) {
 		goto(`/?code=${id}`);
+		localStorage.removeItem("getPrayerSchedule");
 	}
 	function setKeyword(event: Event) {
 		let el: HTMLInputElement = event.target as HTMLInputElement;

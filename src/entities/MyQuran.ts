@@ -19,15 +19,18 @@ export default class MyQuran implements APIConfig, APIContract {
         return this.version;
     }
     getFullUrl(): string {
-       return `${this.getBaseUrl()}/${this.getVersion()}`
+        return `${this.getBaseUrl()}/${this.getVersion()}`
     }
-    
+
     getSourceLink(): string {
         return this.source ?? ""
     }
 
     async getListLokasi(): Promise<Location[]> {
-        let data: any = await (await fetch(`${this.getFullUrl()}/sholat/kota/semua`)).json()
+        let data = await this.offlineStorageWrapper(async () => {
+            return await (await fetch(`${this.getFullUrl()}/sholat/kota/semua`)).json();
+        }, "getListLokasi");
+
         let list: Location[] = data.map((val: { id: any; lokasi: any; }) => {
             let lokasi: Location = {
                 id: val.id,
@@ -38,8 +41,22 @@ export default class MyQuran implements APIConfig, APIContract {
         return list
     }
 
+    async offlineStorageWrapper(callback: Function, id: string) {
+        let data: any;
+        let localData: any = localStorage.getItem(id);
+        if (localData) {
+            data = JSON.parse(localData);
+        } else {
+            data = await callback()
+            localStorage.setItem(id, JSON.stringify(data));
+        }
+        return data
+    }
+
     async getLokasi(id: String): Promise<Location> {
-        let data: any = await (await fetch(`${this.getFullUrl()}/sholat/kota/id/${id}`)).json()
+        let data = await this.offlineStorageWrapper(async () => {
+            return await (await fetch(`${this.getFullUrl()}/sholat/kota/id/${id}`)).json()
+        }, "getLokasi");
         let lokasi: Location = {
             id: data.data.id,
             location: data.data.lokasi
@@ -48,8 +65,12 @@ export default class MyQuran implements APIConfig, APIContract {
     }
 
     async getPrayerSchedule(params: PrayerScheduleParams): Promise<Schedule> {
-        let data: any = await (await fetch(`${this.getFullUrl()}/sholat/jadwal/${params.id}/${params.year}/${params.month}/${params?.date}`)).json()
+        let data = await this.offlineStorageWrapper(async () => {
+            return await (await fetch(`${this.getFullUrl()}/sholat/jadwal/${params.id}/${params.year}/${params.month}/${params?.date}`)).json()
+        }, "getPrayerSchedule");
+
         data = data.data;
+
         let coordinate: Coordinate = {
             lat: data.koordinat.lat,
             long: data.koordinat.long,
@@ -65,7 +86,7 @@ export default class MyQuran implements APIConfig, APIContract {
             ashar: data.jadwal.ashar,
             maghrib: data.jadwal.maghrib,
             isya: data.jadwal.isya,
-            
+
         }
         let date: PrayerDate = {
             full_date: data.jadwal.tanggal,
@@ -82,5 +103,5 @@ export default class MyQuran implements APIConfig, APIContract {
         return schedule;
     }
 
-    
+
 }

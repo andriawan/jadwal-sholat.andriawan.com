@@ -3,9 +3,9 @@ import type PrayerDate from "./PrayerDate";
 import type PrayerSchedule from "./PrayerSchedule";
 
 export default interface Schedule {
-    id: String,
-    location: String,
-    area: String,
+    id: string,
+    location: string,
+    area: string,
     coordinate: Coordinate,
     schedule: PrayerSchedule,
     date: PrayerDate
