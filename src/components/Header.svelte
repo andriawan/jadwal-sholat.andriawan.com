@@ -86,13 +86,14 @@
 			setFuturePrayerSchedule();
 			currentHours = new Date().getHours().toString();
 			currentMinute = new Date().getMinutes().toString();
-			console.log(currentHours)
+			currentHours = currentHours.length < 2 ? '0'.concat(currentHours) : currentHours;
+			currentMinute = currentMinute.length < 2 ? '0'.concat(currentMinute) : currentMinute;
 		}, 1000);
 	});
 
 	onDestroy(async () => {
 		clearInterval(intervalContainer);
-	})
+	});
 </script>
 
 <div class="card rounded-none md:rounded-lg bg-neutral text-neutral-content md:my-3">
