@@ -1,4 +1,6 @@
 <script>
     import "../app.css";
 </script>
-<slot />
+<div class="max-w-lg mx-auto">
+    <slot />
+</div>

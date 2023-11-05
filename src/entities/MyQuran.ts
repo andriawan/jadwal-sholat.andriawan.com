@@ -5,6 +5,7 @@ import type Location from "../contracts/Location";
 import type PrayerSchedule from "../contracts/PrayerSchedule";
 import type PrayerScheduleParams from "../contracts/PrayerScheduleParams";
 import type Schedule from "../contracts/Schedule";
+import type PrayerDate from "../contracts/PrayerDate";
 
 export default class MyQuran implements APIConfig, APIContract {
     base_url: String = "https://api.myquran.com";
@@ -41,23 +42,27 @@ export default class MyQuran implements APIConfig, APIContract {
             lintang: data.koordinat.lintang
         };
         let prayerSchedule: PrayerSchedule = {
-            full_date: data.jadwal.tanggal,
-            date: data.jadwal.date,
+            imsak: data.jadwal.imsak,
             subuh: data.jadwal.subuh,
-            dzuhur: data.jadwal.dzuhur,
+            terbit: data.jadwal.terbit,
             dhuha: data.jadwal.dhuha,
+            dzuhur: data.jadwal.dzuhur,
             ashar: data.jadwal.ashar,
             maghrib: data.jadwal.maghrib,
             isya: data.jadwal.isya,
-            imsak: data.jadwal.imsak,
-            terbit: data.jadwal.terbit
+            
+        }
+        let date: PrayerDate = {
+            full_date: data.jadwal.tanggal,
+            date: data.jadwal.date,
         }
         let schedule: Schedule = {
             id: data.id,
             location: data.lokasi,
             area: data.area,
             coordinate,
-            schedule: prayerSchedule
+            schedule: prayerSchedule,
+            date
         }
         return schedule;
     }
