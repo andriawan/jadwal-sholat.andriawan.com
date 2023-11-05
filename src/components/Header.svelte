@@ -2,15 +2,27 @@
 	import { goto } from '$app/navigation';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import type Schedule from '../contracts/Schedule';
+	import type PrayerSchedule from '../contracts/PrayerSchedule';
 	let nextPrayer: string = '';
 	let nextParyerTime: string = '';
 	let currentParyer: string = '';
-	export let currentParyerMilli: number = 0;
+	let currentParyerMilli: number = 0;
 	let currentHours = '00';
 	let currentMinute = '00';
-	export let diffPrayer: string = '';
+	let diffPrayer: string = '';
+	// props
 	export let schedule: Schedule;
 	export let scheduleNextDay: Schedule;
+	let timeMapping: PrayerSchedule = {
+		subuh: 'dzuhur',
+		dzuhur: 'ashar',
+		ashar: 'maghrib',
+		maghrib: 'isya',
+		isya: 'subuh',
+		imsak: 'subuh',
+		terbit: 'dzuhur',
+		dhuha: 'dzuhur'
+	};
 	let dispatch = createEventDispatcher();
 	let intervalContainer: string | number | NodeJS.Timeout | undefined;
 
@@ -38,20 +50,11 @@
 		return [miliNow, miliComparation];
 	}
 
-	export function setFuturePrayerSchedule() {
+	function setFuturePrayerSchedule() {
+		let comparation = new Date();
+
 		Object.entries(schedule?.schedule).forEach((val) => {
 			let [miliNow, miliComparation] = processComparationTime(val, new Date());
-			if (miliNow < miliComparation) {
-				nextPrayer = val[0];
-				nextParyerTime = val[1];
-				diffPrayer = getTimeDiff(miliComparation - miliNow);
-				dispatch('update:next-prayer', {
-					nextParyerTime,
-					nextPrayer,
-					diffPrayer
-				});
-				return;
-			}
 
 			if (miliNow >= miliComparation && currentParyerMilli <= miliComparation) {
 				currentParyer = val[0];
@@ -61,33 +64,34 @@
 					currentParyerMilli
 				});
 			}
-
-			if (currentParyer === 'isya') {
-				nextPrayer = 'subuh';
-				nextParyerTime = scheduleNextDay.schedule.subuh;
-				let comparation = new Date();
-				comparation.setDate(new Date().getDate() + 1);
-				let [miliNow, miliComparation] = processComparationTime(
-					['shubuh', scheduleNextDay.schedule.subuh],
-					comparation
-				);
-				diffPrayer = getTimeDiff(miliNow - miliComparation);
-				dispatch('update:next-prayer', {
-					nextParyerTime,
-					nextPrayer,
-					diffPrayer
-				});
-			}
 		});
+
+		nextPrayer = timeMapping[currentParyer as keyof PrayerSchedule];
+		nextParyerTime = schedule.schedule[nextPrayer as keyof PrayerSchedule];
+		if(currentParyer === 'isya') {
+			nextParyerTime = scheduleNextDay.schedule.subuh;
+			comparation.setDate(new Date().getDate() + 1)
+		}
+		let [now, comparationData] = processComparationTime([nextPrayer, nextParyerTime], comparation);
+		diffPrayer = getTimeDiff(now - comparationData);
+		dispatch('update:next-prayer', {
+			nextParyerTime,
+			nextPrayer,
+			diffPrayer
+		});
+	}
+
+	function setTime(date: Date) {
+		currentHours = date.getHours().toString();
+		currentMinute = date.getMinutes().toString();
+		currentHours = currentHours.length < 2 ? '0'.concat(currentHours) : currentHours;
+		currentMinute = currentMinute.length < 2 ? '0'.concat(currentMinute) : currentMinute;
 	}
 
 	onMount(async () => {
 		intervalContainer = setInterval(() => {
 			setFuturePrayerSchedule();
-			currentHours = new Date().getHours().toString();
-			currentMinute = new Date().getMinutes().toString();
-			currentHours = currentHours.length < 2 ? '0'.concat(currentHours) : currentHours;
-			currentMinute = currentMinute.length < 2 ? '0'.concat(currentMinute) : currentMinute;
+			setTime(new Date());
 		}, 1000);
 	});
 
