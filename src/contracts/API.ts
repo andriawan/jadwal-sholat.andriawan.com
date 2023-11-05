@@ -4,6 +4,10 @@ import type Schedule from "./Schedule"
 
 export default interface API {
     getListLokasi(): Promise<Location[]>,
-    getLokasi(id: String): Promise<Location>
+    getLokasi(id: string): Promise<Location>
     getPrayerSchedule(params: PrayerScheduleParams): Promise<Schedule>
+    getBaseUrl(): string
+    getVersion(): string
+    getFullUrl(): string
+    getSourceLink(): string | undefined
 }

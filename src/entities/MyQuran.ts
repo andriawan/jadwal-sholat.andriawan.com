@@ -8,11 +8,26 @@ import type Schedule from "../contracts/Schedule";
 import type PrayerDate from "../contracts/PrayerDate";
 
 export default class MyQuran implements APIConfig, APIContract {
-    base_url: String = "https://api.myquran.com";
-    version: String = "v1";
+    base_url: string = "https://api.myquran.com";
+    version: string = "v1";
+    source?: string | undefined = "https://github.com/andriawan/jadwal-sholat.andriawan.com";
+
+    getBaseUrl(): string {
+        return this.base_url;
+    }
+    getVersion(): string {
+        return this.version;
+    }
+    getFullUrl(): string {
+       return `${this.getBaseUrl()}/${this.getVersion()}`
+    }
+    
+    getSourceLink(): string {
+        return this.source ?? ""
+    }
 
     async getListLokasi(): Promise<Location[]> {
-        let data: any = await (await fetch(`${this.base_url}/${this.version}/sholat/kota/semua`)).json()
+        let data: any = await (await fetch(`${this.getFullUrl()}/sholat/kota/semua`)).json()
         let list: Location[] = data.map((val: { id: any; lokasi: any; }) => {
             let lokasi: Location = {
                 id: val.id,
@@ -24,7 +39,7 @@ export default class MyQuran implements APIConfig, APIContract {
     }
 
     async getLokasi(id: String): Promise<Location> {
-        let data: any = await (await fetch(`${this.base_url}/${this.version}/sholat/kota/id/${id}`)).json()
+        let data: any = await (await fetch(`${this.getFullUrl()}/sholat/kota/id/${id}`)).json()
         let lokasi: Location = {
             id: data.data.id,
             location: data.data.lokasi
@@ -33,7 +48,7 @@ export default class MyQuran implements APIConfig, APIContract {
     }
 
     async getPrayerSchedule(params: PrayerScheduleParams): Promise<Schedule> {
-        let data: any = await (await fetch(`${this.base_url}/${this.version}/sholat/jadwal/${params.id}/${params.year}/${params.month}/${params?.date}`)).json()
+        let data: any = await (await fetch(`${this.getFullUrl()}/sholat/jadwal/${params.id}/${params.year}/${params.month}/${params?.date}`)).json()
         data = data.data;
         let coordinate: Coordinate = {
             lat: data.koordinat.lat,

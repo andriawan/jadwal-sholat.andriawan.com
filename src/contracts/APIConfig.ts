@@ -1,4 +1,5 @@
 export default interface APIConfig {
-    base_url: String
-    version: String
+    base_url: string
+    version: string
+    source?: string
 }
