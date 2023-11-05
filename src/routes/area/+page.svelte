@@ -10,7 +10,9 @@
 	export let is_loading: boolean = false;
 	export let dataLocation: Location[] = [];
 	let filterdData: Location[];
-	$: filterdData = dataLocation.filter((val) => val.location.toLocaleLowerCase().includes(keyword));
+	$: filterdData = dataLocation.filter((val) =>
+		val.location.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())
+	);
 	onMount(async () => {
 		is_loading = true;
 		dataLocation = await data.getListLokasi();
@@ -19,13 +21,18 @@
 	export function goTo(id: String) {
 		goto(`/?code=${id}`);
 	}
+	function setKeyword(event: Event) {
+		let el: HTMLInputElement = event.target as HTMLInputElement;
+		keyword = el.value;
+	}
 </script>
 
 <div class="card bg-neutral text-neutral-content my-3 sticky top-0 z-10">
 	<div class="card-body items-center text-center">
 		<input
 			type="text"
-			bind:value={keyword}
+			value={keyword}
+			on:input={setKeyword}
 			placeholder="Ketikan kata kunci..."
 			class="input input-bordered w-full py-3"
 		/>
@@ -40,8 +47,8 @@
 					{#each filterdData as { id, location }}
 						<tr class="hover cursor-pointer" on:click={() => goTo(id)}>
 							<td class="capitalize text-xl">
-                                <span class="badge badge-accent">{id}</span>
-                            </td>
+								<span class="badge badge-accent">{id}</span>
+							</td>
 							<td class="text-right text-xl">{location}</td>
 						</tr>
 					{/each}
