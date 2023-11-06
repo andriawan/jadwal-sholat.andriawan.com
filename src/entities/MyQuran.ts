@@ -41,7 +41,10 @@ export default class MyQuran implements APIConfig, APIContract {
         return list
     }
 
-    async offlineStorageWrapper(callback: Function, id: string) {
+    async offlineStorageWrapper(callback: Function, id: string, forceClear: boolean = false) {
+        if(forceClear) {
+            localStorage.removeItem(id)
+        }
         let data: any;
         let localData: any = localStorage.getItem(id);
         if (localData) {
@@ -67,7 +70,7 @@ export default class MyQuran implements APIConfig, APIContract {
     async getPrayerSchedule(params: PrayerScheduleParams): Promise<Schedule> {
         let data = await this.offlineStorageWrapper(async () => {
             return await (await fetch(`${this.getFullUrl()}/sholat/jadwal/${params.id}/${params.year}/${params.month}/${params?.date}`)).json()
-        }, "getPrayerSchedule");
+        }, `getPrayerSchedule${params.additionalId ?? ''}`, params.forceClear);
 
         data = data.data;
 

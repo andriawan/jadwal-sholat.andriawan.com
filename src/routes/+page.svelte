@@ -7,6 +7,7 @@
 	import Header from '../components/Header.svelte';
 	import TablePrayer from '../components/TablePrayer.svelte';
 	import Footer from '../components/Footer.svelte';
+	import { goto } from '$app/navigation';
 
 	let data: API = new MyQuran();
 	let schedule: Schedule;
@@ -24,7 +25,11 @@
 		checkDayChange();
 	}
 
-	export async function loadPrayer(date: number) {
+	export async function loadPrayer(
+		date: number,
+		additionalId: string = '',
+		forceClear: boolean = false
+	) {
 		let now = new Date();
 		let month: number = now.getMonth() + 1;
 		let year: number = now.getFullYear();
@@ -32,12 +37,21 @@
 			id: selectedCode,
 			year: year.toString(),
 			month: month.toString(),
-			date: date.toString()
+			date: date.toString(),
+			additionalId,
+			forceClear
 		});
 	}
 
 	async function checkDayChange() {
-		schedule = await loadPrayer(new Date().getDate());
+		let forceClear: boolean = $page.url.searchParams.get('refresh') === '1' ? true : false;
+		if (forceClear) {
+			const newUrl = new URL($page.url);
+			newUrl?.searchParams?.delete('refresh');
+			goto(newUrl);
+		}
+		schedule = await loadPrayer(new Date().getDate(), '', forceClear);
+		scheduleNextDay = await loadPrayer(new Date().getDate() + 1, 'next', forceClear);
 		let timezoneOffset = (new Date().getTimezoneOffset() ?? 0) / -60;
 		let isNegative = timezoneOffset < 0 ? '-' : '+';
 		let absTimezone = Math.abs(timezoneOffset);
@@ -55,9 +69,8 @@
 		let nowTime = Date.parse(textNowParsing);
 		let needReload = nowTime > savedTime;
 		if (needReload) {
-			localStorage.removeItem('getPrayerSchedule');
-			schedule = await loadPrayer(new Date().getDate());
-			scheduleNextDay = await loadPrayer(new Date().getDate() + 1);
+			schedule = await loadPrayer(new Date().getDate(), '', true);
+			scheduleNextDay = await loadPrayer(new Date().getDate() + 1, 'next', true);
 		}
 	}
 

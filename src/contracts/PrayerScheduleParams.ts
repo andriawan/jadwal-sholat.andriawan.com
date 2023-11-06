@@ -1,6 +1,8 @@
 export default interface PrayerScheduleParams {
-    id: String,
-    year: String,
-    month: String,
-    date?: String
+    id: string,
+    year: string,
+    month: string,
+    date?: string,
+    additionalId?: string,
+    forceClear?: boolean
 }

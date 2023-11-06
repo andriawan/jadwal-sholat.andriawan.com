@@ -19,8 +19,7 @@
 		is_loading = false;
 	});
 	export function goTo(id: String) {
-		goto(`/?code=${id}`);
-		localStorage.removeItem("getPrayerSchedule");
+		goto(`/?code=${id}&refresh=1`);
 	}
 	function setKeyword(event: Event) {
 		let el: HTMLInputElement = event.target as HTMLInputElement;
