@@ -21,21 +21,49 @@
 
 	export function setNextPrayer(current: CustomEvent) {
 		nextPrayer = current.detail?.nextPrayer;
+		checkDayChange();
 	}
 
 	export async function loadPrayer(date: number) {
+		let now = new Date();
+		let month: number = now.getMonth() + 1;
+		let year: number = now.getFullYear();
 		return await data.getPrayerSchedule({
 			id: selectedCode,
-			year: new Date().getFullYear().toString(),
-			month: new Date().getMonth().toString(),
+			year: year.toString(),
+			month: month.toString(),
 			date: date.toString()
 		});
 	}
 
+	async function checkDayChange() {
+		schedule = await loadPrayer(new Date().getDate());
+		let timezoneOffset = (new Date().getTimezoneOffset() ?? 0) / -60;
+		let isNegative = timezoneOffset < 0 ? '-' : '+';
+		let absTimezone = Math.abs(timezoneOffset);
+		let textSavedParsing = `${schedule.date.date} 00:00:00 GMT${isNegative}${
+			absTimezone < 9 ? `0${absTimezone}:00` : `${absTimezone}:00`
+		}`;
+		let savedTime = Date.parse(textSavedParsing);
+		let now = new Date();
+		let month: number = now.getMonth() + 1;
+		let year: number = now.getFullYear();
+		let date = now.getDate();
+		let textNowParsing = `${year}-${month}-${date < 9 ? `0${date}` : ''} 00:00:00 GMT${isNegative}${
+			absTimezone < 9 ? `0${absTimezone}:00` : `${absTimezone}:00`
+		}`;
+		let nowTime = Date.parse(textNowParsing);
+		let needReload = nowTime > savedTime;
+		if (needReload) {
+			localStorage.removeItem('getPrayerSchedule');
+			schedule = await loadPrayer(new Date().getDate());
+			scheduleNextDay = await loadPrayer(new Date().getDate() + 1);
+		}
+	}
+
 	onMount(async () => {
 		selectedCode = $page.url.searchParams.get('code') ?? selectedCode;
-		schedule = await loadPrayer(new Date().getDate());
-		scheduleNextDay = await loadPrayer(new Date().getDate() + 1);
+		checkDayChange();
 	});
 </script>
 
