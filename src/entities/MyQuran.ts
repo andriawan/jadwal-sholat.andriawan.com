@@ -1,29 +1,21 @@
-import type APIConfig from "../contracts/APIConfig";
-import type APIContract from "../contracts/API";
 import type Coordinate from "../contracts/Coordinate";
 import type Location from "../contracts/Location";
 import type PrayerSchedule from "../contracts/PrayerSchedule";
 import type PrayerScheduleParams from "../contracts/PrayerScheduleParams";
 import type Schedule from "../contracts/Schedule";
 import type PrayerDate from "../contracts/PrayerDate";
+import BaseAPI from "./BaseAPI";
+import type PrayerTimesAPI from "../contracts/API";
 
-export default class MyQuran implements APIConfig, APIContract {
+export default class MyQuran extends BaseAPI implements PrayerTimesAPI {
     base_url: string = "https://api.myquran.com";
     version: string = "v1";
     source?: string | undefined = "https://github.com/andriawan/jadwal-sholat.andriawan.com";
+    static instance: MyQuran = new MyQuran();
 
-    getBaseUrl(): string {
-        return this.base_url;
-    }
-    getVersion(): string {
-        return this.version;
-    }
-    getFullUrl(): string {
-        return `${this.getBaseUrl()}/${this.getVersion()}`
-    }
-
-    getSourceLink(): string {
-        return this.source ?? ""
+    static getInstance(): MyQuran {
+        if(this.instance) return this.instance;
+        return new MyQuran();
     }
 
     async getListLokasi(): Promise<Location[]> {

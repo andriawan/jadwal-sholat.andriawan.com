@@ -3,4 +3,8 @@ export default interface APIConfig {
     version: string
     source?: string
     offlineStorage?: Storage
+    getBaseUrl(): string
+    getVersion(): string
+    getFullUrl(): string
+    getSourceLink?(): string | undefined
 }

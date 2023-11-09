@@ -13,6 +13,7 @@
 	// props
 	export let schedule: Schedule;
 	export let scheduleNextDay: Schedule;
+	export let hijriDate: string;
 	let timeMapping: PrayerSchedule = {
 		subuh: 'dzuhur',
 		dzuhur: 'ashar',
@@ -68,9 +69,9 @@
 
 		nextPrayer = timeMapping[currentParyer as keyof PrayerSchedule];
 		nextParyerTime = schedule.schedule[nextPrayer as keyof PrayerSchedule];
-		if(currentParyer === 'isya') {
+		if (currentParyer === 'isya') {
 			nextParyerTime = scheduleNextDay.schedule.subuh;
-			comparation.setDate(new Date().getDate() + 1)
+			comparation.setDate(new Date().getDate() + 1);
 		}
 		let [now, comparationData] = processComparationTime([nextPrayer, nextParyerTime], comparation);
 		diffPrayer = getTimeDiff(now - comparationData);
@@ -102,15 +103,15 @@
 
 <div class="card rounded-none md:rounded-lg bg-neutral text-neutral-content md:my-3">
 	<div class="card-body items-center text-center">
-		<h2 class="card-title text-lg">
+		<h2 class="card-title text-md">
 			{schedule?.date.full_date ?? 'Loading...'}
-			{currentHours}:{currentMinute}
+			({hijriDate})
 		</h2>
 		<h2 class="text-sm">
 			masuk waktu <span class="capitalize">{currentParyer ? currentParyer : 'Loading...'}</span> di {schedule?.location ??
 				'Loading...'}
 		</h2>
-		<h1 class="text-6xl animate-pulse">{nextParyerTime ? nextParyerTime : '00:00'}</h1>
+		<h1 class="text-6xl animate-pulse">{currentHours}:{currentMinute}</h1>
 		<h1 class="text-sm md:text-lg">
 			<span class="badge badge-accent">{diffPrayer ? diffPrayer : '0 jam, 0 menit'}</span> menuju
 			<span class="capitalize badge badge-info"
