@@ -105,7 +105,7 @@
 
 <div class="card rounded-none md:rounded-lg bg-neutral text-neutral-content md:my-3">
 	<div class="card-body items-center text-center">
-		<h2 class="card-title text-md">
+		<h2 class="card-title text-sm">
 			{schedule?.date.full_date ?? 'Loading...'}
 			({hijriDate})
 		</h2>

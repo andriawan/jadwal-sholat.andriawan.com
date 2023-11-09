@@ -33,7 +33,7 @@
 		checkDayChange();
 	}
 
-	export async function loadPrayer(
+	export async function loadPrayerSchedule(
 		date: number,
 		additionalId: string = '',
 		forceClear: boolean = false
@@ -63,8 +63,8 @@
 			newUrl?.searchParams?.delete('refresh');
 			goto(newUrl);
 		}
-		schedule = await loadPrayer(new Date().getDate(), '', forceClear);
-		scheduleNextDay = await loadPrayer(new Date().getDate() + 1, 'next', forceClear);
+		schedule = await loadPrayerSchedule(new Date().getDate(), '', forceClear);
+		scheduleNextDay = await loadPrayerSchedule(new Date().getDate() + 1, 'next', forceClear);
 		let timezoneOffset = (new Date().getTimezoneOffset() ?? 0) / -60;
 		let isNegative = timezoneOffset < 0 ? '-' : '+';
 		let absTimezone = Math.abs(timezoneOffset);
@@ -82,8 +82,8 @@
 		let nowTime = Date.parse(textNowParsing);
 		let needReload = nowTime > savedTime;
 		if (needReload) {
-			schedule = await loadPrayer(new Date().getDate(), '', true);
-			scheduleNextDay = await loadPrayer(new Date().getDate() + 1, 'next', true);
+			schedule = await loadPrayerSchedule(new Date().getDate(), '', true);
+			scheduleNextDay = await loadPrayerSchedule(new Date().getDate() + 1, 'next', true);
 		}
 	}
 
