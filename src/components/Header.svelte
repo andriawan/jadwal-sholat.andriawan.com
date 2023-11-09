@@ -32,10 +32,12 @@
 		let labelMinutes = '';
 		const timeDifference: number = Math.abs(diff);
 		const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
-		const minutesDifference = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+		const minutesDifference = Math.ceil((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
 
 		labelHours = hoursDifference > 0 ? `${hoursDifference} Jam` : labelHours;
 		labelMinutes = minutesDifference > 0 ? ` ${minutesDifference} menit lagi` : labelMinutes;
+
+		if(!labelMinutes) labelMinutes = " lagi";
 
 		return `${labelHours}${labelMinutes}`;
 	}
