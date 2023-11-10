@@ -82,8 +82,10 @@
 		let nowTime = Date.parse(textNowParsing);
 		let needReload = nowTime > savedTime;
 		if (needReload) {
+			localStorage.clear();
 			schedule = await loadPrayerSchedule(new Date().getDate(), '', true);
 			scheduleNextDay = await loadPrayerSchedule(new Date().getDate() + 1, 'next', true);
+			hijriMonth = hijri.mapHijriMonth(new IndonesiaHijriMapper(), Number(dataHijri.month));
 		}
 	}
 

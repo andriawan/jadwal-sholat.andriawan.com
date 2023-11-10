@@ -6,12 +6,15 @@ import type Schedule from "../contracts/Schedule";
 import type PrayerDate from "../contracts/PrayerDate";
 import BaseAPI from "./BaseAPI";
 import type PrayerTimesAPI from "../contracts/API";
+import FetchRequest from "./FetchRequest";
+import type Request from "../contracts/Request";
 
 export default class MyQuran extends BaseAPI implements PrayerTimesAPI {
     base_url: string = "https://api.myquran.com";
     version: string = "v1";
     source?: string | undefined = "https://github.com/andriawan/jadwal-sholat.andriawan.com";
     static instance: MyQuran = new MyQuran();
+    fetcher: Request = new FetchRequest();
 
     static getInstance(): MyQuran {
         if(this.instance) return this.instance;
@@ -19,10 +22,7 @@ export default class MyQuran extends BaseAPI implements PrayerTimesAPI {
     }
 
     async getListLokasi(): Promise<Location[]> {
-        let data = await this.offlineStorageWrapper(async () => {
-            return await (await fetch(`${this.getFullUrl()}/sholat/kota/semua`)).json();
-        }, "getListLokasi");
-
+        let data = await this.fetcher.fetch(`${this.getFullUrl()}/sholat/kota/semua`);
         let list: Location[] = data.map((val: { id: any; lokasi: any; }) => {
             let lokasi: Location = {
                 id: val.id,
@@ -33,25 +33,8 @@ export default class MyQuran extends BaseAPI implements PrayerTimesAPI {
         return list
     }
 
-    async offlineStorageWrapper(callback: Function, id: string, forceClear: boolean = false) {
-        if(forceClear) {
-            localStorage.removeItem(id)
-        }
-        let data: any;
-        let localData: any = localStorage.getItem(id);
-        if (localData) {
-            data = JSON.parse(localData);
-        } else {
-            data = await callback()
-            localStorage.setItem(id, JSON.stringify(data));
-        }
-        return data
-    }
-
     async getLokasi(id: String): Promise<Location> {
-        let data = await this.offlineStorageWrapper(async () => {
-            return await (await fetch(`${this.getFullUrl()}/sholat/kota/id/${id}`)).json()
-        }, "getLokasi");
+        let data = await this.fetcher.fetch(`${this.getFullUrl()}/sholat/kota/id/${id}`);
         let lokasi: Location = {
             id: data.data.id,
             location: data.data.lokasi
@@ -60,10 +43,7 @@ export default class MyQuran extends BaseAPI implements PrayerTimesAPI {
     }
 
     async getPrayerSchedule(params: PrayerScheduleParams): Promise<Schedule> {
-        let data = await this.offlineStorageWrapper(async () => {
-            return await (await fetch(`${this.getFullUrl()}/sholat/jadwal/${params.id}/${params.year}/${params.month}/${params?.date}`)).json()
-        }, `getPrayerSchedule${params.additionalId ?? ''}`, params.forceClear);
-
+        let data = await this.fetcher.fetch(`${this.getFullUrl()}/sholat/jadwal/${params.id}/${params.year}/${params.month}/${params?.date}`);
         data = data.data;
 
         let coordinate: Coordinate = {
