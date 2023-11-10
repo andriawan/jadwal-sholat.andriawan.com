@@ -76,7 +76,7 @@
 		let month: number = now.getMonth() + 1;
 		let year: number = now.getFullYear();
 		let date = now.getDate();
-		let textNowParsing = `${year}-${month}-${date < 9 ? `0${date}` : ''} 00:00:00 GMT${isNegative}${
+		let textNowParsing = `${year}-${month}-${date < 9 ? `0${date}` : date} 00:00:00 GMT${isNegative}${
 			absTimezone < 9 ? `0${absTimezone}:00` : `${absTimezone}:00`
 		}`;
 		let nowTime = Date.parse(textNowParsing);
