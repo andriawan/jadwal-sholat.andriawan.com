@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	import type Schedule from '../contracts/Schedule';
 	import type PrayerSchedule from '../contracts/PrayerSchedule';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	let nextPrayer: string = '';
 	let nextParyerTime: string = '';
 	let currentParyer: string = '';
@@ -14,6 +15,9 @@
 	export let schedule: Schedule;
 	export let scheduleNextDay: Schedule;
 	export let hijriDate: string;
+
+	export let stateTab = 'HARIAN';
+
 	let timeMapping: PrayerSchedule = {
 		subuh: 'dzuhur',
 		dzuhur: 'ashar',
@@ -37,7 +41,7 @@
 		labelHours = hoursDifference > 0 ? `${hoursDifference} Jam` : labelHours;
 		labelMinutes = minutesDifference > 0 ? ` ${minutesDifference} menit lagi` : labelMinutes;
 
-		if(!labelMinutes) labelMinutes = " lagi";
+		if (!labelMinutes) labelMinutes = ' lagi';
 
 		return `${labelHours}${labelMinutes}`;
 	}
@@ -104,6 +108,23 @@
 </script>
 
 <div class="card rounded-none md:rounded-lg bg-neutral text-neutral-content md:my-3">
+	<div class="flex justify-end flex-1 absolute right-0">
+		<div class="flex items-stretch">
+			<details class="dropdown dropdown-end">
+				<summary class="btn btn-ghost px-0">
+					<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 256 256"
+						><path
+							fill="currentColor"
+							d="M156 128a28 28 0 1 1-28-28a28 28 0 0 1 28 28Zm-28-52a28 28 0 1 0-28-28a28 28 0 0 0 28 28Zm0 104a28 28 0 1 0 28 28a28 28 0 0 0-28-28Z"
+						/></svg
+					>
+				</summary>
+				<ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 w-52">
+					<li><a href={`/area?tab=${stateTab}`}>Ganti Daerah</a></li>
+				</ul>
+			</details>
+		</div>
+	</div>
 	<div class="card-body items-center text-center">
 		<h2 class="card-title text-sm">
 			{schedule?.date.full_date ?? 'Loading...'}
@@ -124,6 +145,26 @@
 					: 'Loading...'}</span
 			>
 		</h1>
-		<button on:click={() => goto('/area')} class="btn text-info btn-link">Ganti Daerah</button>
+	</div>
+	<div class="tabs">
+		<button
+			on:click={() => {
+				stateTab = 'HARIAN';
+				dispatch('tab:update', 'HARIAN');
+				$page.url.searchParams.set('tab', 'HARIAN');
+				goto(`?${$page.url.searchParams.toString()}`);
+			}}
+			class={`flex-1 tab tab-bordered ${stateTab === 'HARIAN' ? 'tab-active' : ''}`}>Harian</button
+		>
+		<button
+			on:click={() => {
+				stateTab = 'BULANAN';
+				dispatch('tab:update', 'BULANAN');
+				$page.url.searchParams.set('tab', 'BULANAN');
+				goto(`?${$page.url.searchParams.toString()}`);
+			}}
+			class={`flex-1 tab tab-bordered ${stateTab === 'BULANAN' ? 'tab-active' : ''}`}
+			>Bulanan</button
+		>
 	</div>
 </div>

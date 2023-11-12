@@ -42,6 +42,45 @@ export default class MyQuran extends BaseAPI implements PrayerTimesAPI {
         return lokasi;
     }
 
+    async getPrayerScheduleList(params: PrayerScheduleParams): Promise<Schedule[]> {
+        let data = await this.fetcher.fetch(`${this.getFullUrl()}/sholat/jadwal/${params.id}/${params.year}/${params.month}`);
+        data = data.data;
+        let scheduleList: Schedule[] = [];
+        let coordinate: Coordinate = {
+            lat: data.koordinat.lat,
+            long: data.koordinat.long,
+            bujur: data.koordinat.bujur,
+            lintang: data.koordinat.lintang
+        };
+        data?.jadwal.forEach((jadwal: any) => {
+            let date: PrayerDate = {
+                full_date: jadwal.tanggal,
+                date: jadwal.date,
+            }
+            let prayerSchedule: PrayerSchedule = {
+                imsak: jadwal.imsak,
+                subuh: jadwal.subuh,
+                terbit: jadwal.terbit,
+                dhuha: jadwal.dhuha,
+                dzuhur: jadwal.dzuhur,
+                ashar: jadwal.ashar,
+                maghrib: jadwal.maghrib,
+                isya: jadwal.isya,
+    
+            }
+            let schedule: Schedule = {
+                id: data.id,
+                location: data.lokasi,
+                area: data.area,
+                coordinate,
+                schedule: prayerSchedule,
+                date
+            }
+            scheduleList.push(schedule);
+        });
+        return scheduleList;
+    }
+
     async getPrayerSchedule(params: PrayerScheduleParams): Promise<Schedule> {
         let data = await this.fetcher.fetch(`${this.getFullUrl()}/sholat/jadwal/${params.id}/${params.year}/${params.month}/${params?.date}`);
         data = data.data;

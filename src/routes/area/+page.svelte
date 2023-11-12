@@ -4,6 +4,7 @@
 	import type API from '../../contracts/API';
 	import type Location from '../../contracts/Location';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	let data: API = new MyQuran();
 	export let keyword: string = '';
@@ -19,7 +20,7 @@
 		is_loading = false;
 	});
 	export function goTo(id: String) {
-		goto(`/?code=${id}&refresh=1`);
+		goto(`/?code=${id}&refresh=1&tab=${$page.url.searchParams.get('tab') ?? 'BULANAN'}`);
 	}
 	function setKeyword(event: Event) {
 		let el: HTMLInputElement = event.target as HTMLInputElement;

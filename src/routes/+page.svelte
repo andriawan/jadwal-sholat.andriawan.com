@@ -13,16 +13,19 @@
 	import DateFnsTime from '../entities/DateFnsTime';
 	import { id } from 'date-fns/locale';
 	import IndonesiaHijriMapper from '../entities/IndonesiaHijriMapper';
+	import TablePrayerMonthly from '../components/TablePrayerMonthly.svelte';
 
-	let data: PrayerTimesAPI = MyQuran.getInstance();
+	let api: PrayerTimesAPI = MyQuran.getInstance();
 	let hijri: Calendar = Calendar.getInstance();
 	let timeManager: Time = DateFnsTime.getInstance(new Date(), id);
 	let schedule: Schedule;
+	let monthlySchedule: Schedule[];
 	let scheduleNextDay: Schedule;
 	let selectedCode: string = '1301';
 	let currentParyer: string;
 	let nextPrayer: string;
 	let hijriDate: string;
+	let tab = 'HARIAN';
 
 	export function setCurrentPrayer(current: CustomEvent) {
 		currentParyer = current.detail?.currentParyer;
@@ -33,21 +36,26 @@
 		checkDayChange();
 	}
 
-	export async function loadPrayerSchedule(
-		date: number,
-		additionalId: string = '',
-		forceClear: boolean = false
-	) {
+	export async function loadPrayerSchedule(date: number) {
 		let now = new Date();
 		let month: number = now.getMonth() + 1;
 		let year: number = now.getFullYear();
-		return await data.getPrayerSchedule({
+		return await api.getPrayerSchedule({
 			id: selectedCode,
 			year: year.toString(),
 			month: month.toString(),
-			date: date.toString(),
-			additionalId,
-			forceClear
+			date: date.toString()
+		});
+	}
+
+	export async function loadPrayerScheduleList() {
+		let now = new Date();
+		let month: number = now.getMonth() + 1;
+		let year: number = now.getFullYear();
+		return await api.getPrayerScheduleList({
+			id: selectedCode,
+			year: year.toString(),
+			month: month.toString()
 		});
 	}
 
@@ -56,15 +64,16 @@
 		let dataHijri = await hijri.getHijriCalendar(dateFormat);
 		let hijriMonth = hijri.mapHijriMonth(new IndonesiaHijriMapper(), Number(dataHijri.month));
 		let forceClear: boolean = $page.url.searchParams.get('refresh') === '1' ? true : false;
-		
+
 		hijriDate = `${dataHijri.day} ${hijriMonth} ${dataHijri.year}`;
 		if (forceClear) {
 			const newUrl = new URL($page.url);
 			newUrl?.searchParams?.delete('refresh');
 			goto(newUrl);
 		}
-		schedule = await loadPrayerSchedule(new Date().getDate(), '', forceClear);
-		scheduleNextDay = await loadPrayerSchedule(new Date().getDate() + 1, 'next', forceClear);
+		schedule = await loadPrayerSchedule(new Date().getDate());
+		scheduleNextDay = await loadPrayerSchedule(new Date().getDate() + 1);
+		monthlySchedule = await loadPrayerScheduleList();
 		let timezoneOffset = (new Date().getTimezoneOffset() ?? 0) / -60;
 		let isNegative = timezoneOffset < 0 ? '-' : '+';
 		let absTimezone = Math.abs(timezoneOffset);
@@ -76,15 +85,16 @@
 		let month: number = now.getMonth() + 1;
 		let year: number = now.getFullYear();
 		let date = now.getDate();
-		let textNowParsing = `${year}-${month}-${date < 9 ? `0${date}` : date} 00:00:00 GMT${isNegative}${
-			absTimezone < 9 ? `0${absTimezone}:00` : `${absTimezone}:00`
-		}`;
+		let textNowParsing = `${year}-${month}-${
+			date < 9 ? `0${date}` : date
+		} 00:00:00 GMT${isNegative}${absTimezone < 9 ? `0${absTimezone}:00` : `${absTimezone}:00`}`;
 		let nowTime = Date.parse(textNowParsing);
 		let needReload = nowTime > savedTime;
 		if (needReload) {
 			localStorage.clear();
-			schedule = await loadPrayerSchedule(new Date().getDate(), '', true);
-			scheduleNextDay = await loadPrayerSchedule(new Date().getDate() + 1, 'next', true);
+			schedule = await loadPrayerSchedule(new Date().getDate());
+			scheduleNextDay = await loadPrayerSchedule(new Date().getDate() + 1);
+			monthlySchedule = await loadPrayerScheduleList();
 			hijriMonth = hijri.mapHijriMonth(new IndonesiaHijriMapper(), Number(dataHijri.month));
 		}
 	}
@@ -92,6 +102,7 @@
 	onMount(async () => {
 		selectedCode = $page.url.searchParams.get('code') ?? selectedCode;
 		checkDayChange();
+		tab = $page.url.searchParams.get('tab') ?? 'HARIAN';
 	});
 </script>
 
@@ -99,12 +110,16 @@
 	{schedule}
 	{scheduleNextDay}
 	{hijriDate}
+	stateTab={tab}
+	on:tab:update={(event) => tab = event.detail}
 	on:update:current-prayer={setCurrentPrayer}
 	on:update:next-prayer={setNextPrayer}
 />
-{#if schedule}
+{#if schedule && tab === 'HARIAN'}
 	<TablePrayer {nextPrayer} {schedule} {currentParyer} />
+{:else if monthlySchedule && tab === 'BULANAN'}
+	<TablePrayerMonthly todaySchedule="{schedule}" schedule={monthlySchedule} />
 {:else}
 	<p class="text-center"><span class="loading loading-spinner loading-lg" /></p>
 {/if}
-<Footer {data} />
+<Footer data={api} />

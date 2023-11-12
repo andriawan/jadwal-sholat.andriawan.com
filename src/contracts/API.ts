@@ -6,4 +6,5 @@ export default interface PrayerTimesAPI {
     getListLokasi(): Promise<Location[]>,
     getLokasi(id: string): Promise<Location>
     getPrayerSchedule(params: PrayerScheduleParams): Promise<Schedule>
+    getPrayerScheduleList(params: PrayerScheduleParams): Promise<Schedule[]>
 }
