@@ -1,17 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import MyQuran from '../../entities/MyQuran';
 	import type API from '../../contracts/API';
 	import type Location from '../../contracts/Location';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import Aladhan from '../../entities/Aladhan';
+	import QueryString from 'qs';
 
-	let data: API = new MyQuran();
+	let data: API = Aladhan.getInstance();
 	export let keyword: string = '';
 	export let is_loading: boolean = false;
 	export let dataLocation: Location[] = [];
-	let filterdData: Location[];
-	$: filterdData = dataLocation.filter((val) =>
+	let filteredData: Location[];
+	$: filteredData = dataLocation.filter((val) =>
 		val.location.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())
 	);
 	onMount(async () => {
@@ -19,8 +20,16 @@
 		dataLocation = await data.getListLokasi();
 		is_loading = false;
 	});
-	export function goTo(id: String) {
-		goto(`/?code=${id}&refresh=1&tab=${$page.url.searchParams.get('tab') ?? 'BULANAN'}`);
+	export function goTo({id, lat, long, location}: Location) {
+		const query = QueryString.stringify({
+			code: id,
+			lat,
+			long,
+			refresh: 1,
+			distric_name: location,
+			tab: $page.url.searchParams.get('tab') ?? 'BULANAN'
+		})
+		goto(`/?${query}`);
 	}
 	function setKeyword(event: Event) {
 		let el: HTMLInputElement = event.target as HTMLInputElement;
@@ -44,13 +53,13 @@
 		<table class="table">
 			<!-- head -->
 			<tbody>
-				{#if filterdData.length > 0}
-					{#each filterdData as { id, location }}
-						<tr class="hover cursor-pointer" on:click={() => goTo(id)}>
+				{#if filteredData.length > 0}
+					{#each filteredData as filtered}
+						<tr class="hover cursor-pointer" on:click={() => goTo(filtered)}>
 							<td class="capitalize text-xl">
-								<span class="badge badge-accent">{id}</span>
+								<span class="badge badge-accent">{filtered.id}</span>
 							</td>
-							<td class="text-right text-xl">{location}</td>
+							<td class="text-right text-xl">{filtered.location}</td>
 						</tr>
 					{/each}
 				{/if}

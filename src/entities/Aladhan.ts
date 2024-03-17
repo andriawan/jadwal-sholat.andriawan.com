@@ -22,8 +22,19 @@ export default class Aladhan extends BaseAPI implements PrayerTimesAPI {
         return new Aladhan();
     }
 
-    getListLokasi(): Promise<Location[]> {
-        throw new Error("Method not implemented.");
+    async getListLokasi(): Promise<Location[]> {
+        let data = await this.fetcher.fetch(`/districs.json`);
+        let list: Location[] = data.map((val: { 
+            id: any; name: any; latitude: any, longitude: any}) => {
+            let lokasi: Location = {
+                id: val.id,
+                location: val.name,
+                lat: val.latitude,
+                long: val.longitude
+            }
+            return lokasi;
+        })
+        return list;
     }
     getLokasi(id: string): Promise<Location> {
         throw new Error("Method not implemented.");
@@ -33,7 +44,10 @@ export default class Aladhan extends BaseAPI implements PrayerTimesAPI {
         const schedule = lists.find(data => {
             return data.date.date === params.date ?? '-';
         })
-        if(schedule) return schedule;
+        if(schedule) {
+            schedule.location = params.location ?? "-"
+            return schedule
+        };
         return {
             id: "",
             location: "",

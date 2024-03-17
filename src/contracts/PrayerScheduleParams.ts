@@ -6,5 +6,6 @@ export default interface PrayerScheduleParams {
     additionalId?: string,
     forceClear?: boolean,
     lat?: string,
-    long?: string
+    long?: string,
+    location?: string
 }

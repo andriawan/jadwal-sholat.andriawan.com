@@ -15,7 +15,11 @@ export default abstract class BaseAPI implements APIConfig {
     }
     
     getFullUrl(): string {
-        return `${this.getBaseUrl()}/${this.getVersion()}`
+        let version = "";
+        if(this.getVersion()) {
+            version = "/".concat(this.getVersion());
+        }
+        return `${this.getBaseUrl()}${version}`
     }
 
     getSourceLink(): string {

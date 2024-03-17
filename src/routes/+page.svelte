@@ -30,6 +30,7 @@
 	// Jakarta Lat Long
 	let lat = '-8.1844859'; 
 	let long = '113.6680747';
+	let districsName = '';
 
 
 	export function setCurrentPrayer(current: CustomEvent) {
@@ -51,7 +52,8 @@
 			month: month.toString(),
 			date: date.toString(),
 			lat: lat,
-			long: long
+			long: long,
+			location: districsName
 		});
 	}
 
@@ -113,7 +115,8 @@
 		checkDayChange();
 		tab = $page.url.searchParams.get('tab') ?? 'HARIAN';
 		lat = $page.url.searchParams.get('lat') ?? lat;
-		long = $page.url.searchParams.get('lat') ?? long;
+		long = $page.url.searchParams.get('long') ?? long;
+		districsName = $page.url.searchParams.get('distric_name') ?? districsName;
 	});
 </script>
 
