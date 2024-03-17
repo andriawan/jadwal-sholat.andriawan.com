@@ -1,4 +1,6 @@
 export default interface Location {
-    id: String,
-    location: String
+    id: string,
+    location: string,
+    lat?: number,
+    long?: number
 }
