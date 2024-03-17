@@ -1,6 +1,6 @@
 export default interface Coordinate {
-    lat: String,
-    long: String,
-    bujur: String,
-    lintang: String
+    lat: string,
+    long: string,
+    bujur: string,
+    lintang: string
 }

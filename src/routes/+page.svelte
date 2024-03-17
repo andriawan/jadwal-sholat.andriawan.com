@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import MyQuran from '../entities/MyQuran';
 	import type Schedule from '../contracts/Schedule';
 	import { page } from '$app/stores';
 	import Header from '../components/Header.svelte';
@@ -14,8 +13,9 @@
 	import { id } from 'date-fns/locale';
 	import IndonesiaHijriMapper from '../entities/IndonesiaHijriMapper';
 	import TablePrayerMonthly from '../components/TablePrayerMonthly.svelte';
+	import Aladhan from '../entities/Aladhan';
 
-	let api: PrayerTimesAPI = MyQuran.getInstance();
+	let api: PrayerTimesAPI = Aladhan.getInstance();
 	let hijri: Calendar = Calendar.getInstance();
 	let timeManager: Time = DateFnsTime.getInstance(new Date(), id);
 	let schedule: Schedule;
@@ -26,6 +26,11 @@
 	let nextPrayer: string;
 	let hijriDate: string;
 	let tab = 'HARIAN';
+
+	// Jakarta Lat Long
+	let lat = '-8.1844859'; 
+	let long = '113.6680747';
+
 
 	export function setCurrentPrayer(current: CustomEvent) {
 		currentParyer = current.detail?.currentParyer;
@@ -44,7 +49,9 @@
 			id: selectedCode,
 			year: year.toString(),
 			month: month.toString(),
-			date: date.toString()
+			date: date.toString(),
+			lat: lat,
+			long: long
 		});
 	}
 
@@ -55,7 +62,9 @@
 		return await api.getPrayerScheduleList({
 			id: selectedCode,
 			year: year.toString(),
-			month: month.toString()
+			month: month.toString(),
+			lat: lat,
+			long: long
 		});
 	}
 
@@ -103,6 +112,8 @@
 		selectedCode = $page.url.searchParams.get('code') ?? selectedCode;
 		checkDayChange();
 		tab = $page.url.searchParams.get('tab') ?? 'HARIAN';
+		lat = $page.url.searchParams.get('lat') ?? lat;
+		long = $page.url.searchParams.get('lat') ?? long;
 	});
 </script>
 

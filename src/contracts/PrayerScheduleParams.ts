@@ -4,5 +4,7 @@ export default interface PrayerScheduleParams {
     month: string,
     date?: string,
     additionalId?: string,
-    forceClear?: boolean
+    forceClear?: boolean,
+    lat?: string,
+    long?: string
 }
