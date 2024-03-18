@@ -132,9 +132,6 @@
 		);
 		let diff = endComparation.getTime() - startComparation.getTime();
 		let nowDiff = now.getTime() - startComparation.getTime();
-		console.log(diff);
-		console.log(nowDiff);
-		console.log(nowDiff / diff);
 		diffFasting = getTimeDiff(nowFasting - comparationDataFasting);
 		percentageFasting = Math.floor((nowDiff / diff) * 100);
 	}
@@ -179,7 +176,7 @@
 					: 'Loading...'}</span
 			>
 		</h1>
-		{#if hijriMonth === 'Ramadhan'}
+		{#if hijriMonth === 'Ramadhan' && percentageFasting <= 100}
 			<div class="pt-2 w-full">
 				<h1 class="text-lg">
 					Buka Puasa <span class="badge badge-accent"
