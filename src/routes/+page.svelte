@@ -25,12 +25,13 @@
 	let currentParyer: string;
 	let nextPrayer: string;
 	let hijriDate: string;
+	let hijriMonth: string;
 	let tab = 'HARIAN';
 
 	// Jakarta Lat Long
 	let lat = '-8.1844859'; 
 	let long = '113.6680747';
-	let districsName = '';
+	let districsName = 'Jakarta';
 
 
 	export function setCurrentPrayer(current: CustomEvent) {
@@ -73,7 +74,7 @@
 	async function checkDayChange() {
 		let dateFormat = timeManager.format('dd-MM-yyyy', timeManager.getTodayDate());
 		let dataHijri = await hijri.getHijriCalendar(dateFormat);
-		let hijriMonth = hijri.mapHijriMonth(new IndonesiaHijriMapper(), Number(dataHijri.month));
+		hijriMonth = hijri.mapHijriMonth(new IndonesiaHijriMapper(), Number(dataHijri.month));
 		let forceClear: boolean = $page.url.searchParams.get('refresh') === '1' ? true : false;
 
 		hijriDate = `${dataHijri.day} ${hijriMonth} ${dataHijri.year}`;
@@ -124,6 +125,7 @@
 	{schedule}
 	{scheduleNextDay}
 	{hijriDate}
+	{hijriMonth}
 	stateTab={tab}
 	on:tab:update={(event) => tab = event.detail}
 	on:update:current-prayer={setCurrentPrayer}
@@ -136,4 +138,3 @@
 {:else}
 	<p class="text-center"><span class="loading loading-spinner loading-lg" /></p>
 {/if}
-<Footer data={api} />

@@ -11,10 +11,14 @@
 	let currentHours = '00';
 	let currentMinute = '00';
 	let diffPrayer: string = '';
+	let diffFasting: string = '';
+	let percentageFasting: number = 0;
+	let queryParams: string = '';
 	// props
 	export let schedule: Schedule;
 	export let scheduleNextDay: Schedule;
 	export let hijriDate: string;
+	export let hijriMonth: string;
 
 	export let stateTab = 'HARIAN';
 
@@ -80,6 +84,9 @@
 			comparation.setDate(new Date().getDate() + 1);
 		}
 		let [now, comparationData] = processComparationTime([nextPrayer, nextParyerTime], comparation);
+
+		setTimeDiffFasting(schedule);
+
 		diffPrayer = getTimeDiff(now - comparationData);
 		dispatch('update:next-prayer', {
 			nextParyerTime,
@@ -96,6 +103,7 @@
 	}
 
 	onMount(async () => {
+		queryParams = $page.url.searchParams.toString();
 		intervalContainer = setInterval(() => {
 			setFuturePrayerSchedule();
 			setTime(new Date());
@@ -105,6 +113,31 @@
 	onDestroy(async () => {
 		clearInterval(intervalContainer);
 	});
+
+	function setTimeDiffFasting(schedule: Schedule) {
+		let startFasting = schedule.schedule.subuh;
+		let endFasting = schedule.schedule.maghrib;
+		let comparation = new Date();
+		let now = new Date();
+		let startComparation = new Date();
+		let endComparation = new Date();
+		let [hours, minute] = startFasting.split(':');
+		let [hoursEnd, minuteEnd] = endFasting.split(':');
+
+		startComparation.setHours(parseInt(hours), parseFloat(minute), 0, 0);
+		endComparation.setHours(parseInt(hoursEnd), parseFloat(minuteEnd), 0, 0);
+		let [nowFasting, comparationDataFasting] = processComparationTime(
+			[startFasting, endFasting],
+			comparation
+		);
+		let diff = endComparation.getTime() - startComparation.getTime();
+		let nowDiff = now.getTime() - startComparation.getTime();
+		console.log(diff);
+		console.log(nowDiff);
+		console.log(nowDiff / diff);
+		diffFasting = getTimeDiff(nowFasting - comparationDataFasting);
+		percentageFasting = Math.floor((nowDiff / diff) * 100);
+	}
 </script>
 
 <div class="card rounded-none md:rounded-lg bg-neutral text-neutral-content md:my-3">
@@ -121,6 +154,7 @@
 				</summary>
 				<ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 w-52">
 					<li><a href={`/area?tab=${stateTab}`}>Ganti Daerah</a></li>
+					<li><a href={`/about?${queryParams}`}>Tentang Aplikasi</a></li>
 				</ul>
 			</details>
 		</div>
@@ -145,6 +179,17 @@
 					: 'Loading...'}</span
 			>
 		</h1>
+		{#if hijriMonth === 'Ramadhan'}
+			<div class="pt-2 w-full">
+				<h1 class="text-lg">
+					Buka Puasa <span class="badge badge-accent"
+						>{diffFasting ? diffFasting : '0 jam, 0 menit'}</span
+					>
+				</h1>
+				<progress class="progress progress-accent" value={percentageFasting} max="100" />
+				<p>{percentageFasting}%</p>
+			</div>
+		{/if}
 	</div>
 	<div class="tabs">
 		<button

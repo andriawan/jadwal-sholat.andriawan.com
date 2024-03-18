@@ -26,28 +26,28 @@
 					<th
 						class={`capitalize ${
 							todaySchedule.date.date === dataSchedule.date.date ? styleToday : ''
-						}`}><p class="w-[80px] text-xs">{dataSchedule.date.full_date}</p></th
+						}`}><p class="min-w-[80px] text-xs">{dataSchedule.date.full_date}</p></th
 					>
 					<td class="text-right">
-						<span class="badge text-md badge-accent w-[100px]">{dataSchedule.schedule.imsak}</span>
+						<span class="badge text-md badge-accent min-w-[110px]">{dataSchedule.schedule.imsak}</span>
 					</td>
 					<td class="text-right">
-						<span class="badge text-md badge-accent w-[100px]">{dataSchedule.schedule.subuh}</span>
+						<span class="badge text-md badge-accent min-w-[110px]">{dataSchedule.schedule.subuh}</span>
 					</td>
 					<td class="text-right">
-						<span class="badge text-md badge-accent w-[100px]">{dataSchedule.schedule.dhuha}</span>
+						<span class="badge text-md badge-accent min-w-[110px]">{dataSchedule.schedule.dhuha}</span>
 					</td>
 					<td class="text-right">
-						<span class="badge text-md badge-accent w-[100px]">{dataSchedule.schedule.dzuhur}</span>
+						<span class="badge text-md badge-accent min-w-[110px]">{dataSchedule.schedule.dzuhur}</span>
 					</td>
 					<td class="text-right">
-						<span class="badge text-md badge-accent w-[100px]">{dataSchedule.schedule.ashar}</span>
+						<span class="badge text-md badge-accent min-w-[110px]">{dataSchedule.schedule.ashar}</span>
 					</td>
 					<td class="text-right">
-						<span class="badge text-md badge-accent w-[100px]">{dataSchedule.schedule.maghrib}</span>
+						<span class="badge text-md badge-accent min-w-[110px]">{dataSchedule.schedule.maghrib}</span>
 					</td>
 					<td class="text-right">
-						<span class="badge text-md badge-accent w-[100px]">{dataSchedule.schedule.isya}</span>
+						<span class="badge text-md badge-accent min-w-[110px]">{dataSchedule.schedule.isya}</span>
 					</td>
 				</tr>
 			{/each}
