@@ -149,7 +149,7 @@
 						/></svg
 					>
 				</summary>
-				<ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 w-52">
+				<ul class="text-black dark:text-neutral-content p-2 shadow menu dropdown-content z-[1] bg-base-100 w-52">
 					<li><a href={`/area?tab=${stateTab}`}>Ganti Daerah</a></li>
 					<li><a href={`/about?${queryParams}`}>Tentang Aplikasi</a></li>
 				</ul>
@@ -196,7 +196,9 @@
 				$page.url.searchParams.set('tab', 'HARIAN');
 				goto(`?${$page.url.searchParams.toString()}`);
 			}}
-			class={`flex-1 tab tab-bordered ${stateTab === 'HARIAN' ? 'tab-active' : ''}`}>Harian</button
+			class={`text-white dark:text-neutral-content flex-1 tab tab-bordered ${
+				stateTab === 'HARIAN' ? 'tab-active' : ''
+			}`}>Harian</button
 		>
 		<button
 			on:click={() => {
@@ -205,8 +207,9 @@
 				$page.url.searchParams.set('tab', 'BULANAN');
 				goto(`?${$page.url.searchParams.toString()}`);
 			}}
-			class={`flex-1 tab tab-bordered ${stateTab === 'BULANAN' ? 'tab-active' : ''}`}
-			>Bulanan</button
+			class={`text-white dark:text-neutral-content flex-1 tab tab-bordered ${
+				stateTab === 'BULANAN' ? 'tab-active' : ''
+			}`}>Bulanan</button
 		>
 	</div>
 </div>
