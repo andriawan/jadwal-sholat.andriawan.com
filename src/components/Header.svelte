@@ -55,7 +55,7 @@
 		let [hours, minute] = time.split(':');
 		let hoursInt: number = parseInt(hours);
 		let minuteInt: number = parseInt(minute);
-		comparation.setHours(hoursInt, minuteInt);
+		comparation.setHours(hoursInt, minuteInt, 0, 0);
 		let miliNow = now.getTime();
 		let miliComparation = comparation.getTime();
 		return [miliNow, miliComparation];
@@ -176,7 +176,7 @@
 					: 'Loading...'}</span
 			>
 		</h1>
-		{#if hijriMonth === 'Ramadhan' && percentageFasting <= 100}
+		{#if hijriMonth === 'Ramadhan' && percentageFasting <= 100 && percentageFasting > 0}
 			<div class="pt-2 w-full">
 				<h1 class="text-lg">
 					Buka Puasa <span class="badge badge-accent"
