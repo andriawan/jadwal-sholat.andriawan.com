@@ -1,3 +1,3 @@
 export default interface Request {
-    fetch(requester: string): Promise<any>
+	fetch(requester: string): Promise<any>;
 }

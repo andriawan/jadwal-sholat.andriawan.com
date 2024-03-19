@@ -1,7 +1,8 @@
 <script>
-    import "../app.css";
-    export const prerender = true;
+	import '../app.css';
+	export const prerender = true;
 </script>
+
 <div class="max-w-lg mx-auto">
-    <slot />
+	<slot />
 </div>

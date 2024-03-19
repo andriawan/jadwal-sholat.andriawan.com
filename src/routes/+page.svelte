@@ -29,10 +29,9 @@
 	let tab = 'HARIAN';
 
 	// Jakarta Lat Long
-	let lat = '-8.1844859'; 
+	let lat = '-8.1844859';
 	let long = '113.6680747';
 	let districsName = 'Jakarta';
-
 
 	export function setCurrentPrayer(current: CustomEvent) {
 		currentParyer = current.detail?.currentParyer;
@@ -127,14 +126,14 @@
 	{hijriDate}
 	{hijriMonth}
 	stateTab={tab}
-	on:tab:update={(event) => tab = event.detail}
+	on:tab:update={(event) => (tab = event.detail)}
 	on:update:current-prayer={setCurrentPrayer}
 	on:update:next-prayer={setNextPrayer}
 />
 {#if schedule && tab === 'HARIAN'}
 	<TablePrayer {nextPrayer} {schedule} {currentParyer} />
 {:else if monthlySchedule && tab === 'BULANAN'}
-	<TablePrayerMonthly todaySchedule="{schedule}" schedule={monthlySchedule} />
+	<TablePrayerMonthly todaySchedule={schedule} schedule={monthlySchedule} />
 {:else}
 	<p class="text-center"><span class="loading loading-spinner loading-lg" /></p>
 {/if}

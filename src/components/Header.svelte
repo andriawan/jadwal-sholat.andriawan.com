@@ -149,7 +149,9 @@
 						/></svg
 					>
 				</summary>
-				<ul class="text-black dark:text-neutral-content p-2 shadow menu dropdown-content z-[1] bg-base-100 w-52">
+				<ul
+					class="text-black dark:text-neutral-content p-2 shadow menu dropdown-content z-[1] bg-base-100 w-52"
+				>
 					<li><a href={`/area?tab=${stateTab}`}>Ganti Daerah</a></li>
 					<li><a href={`/about?${queryParams}`}>Tentang Aplikasi</a></li>
 				</ul>

@@ -20,7 +20,7 @@
 		dataLocation = await data.getListLokasi();
 		is_loading = false;
 	});
-	export function goTo({id, lat, long, location}: Location) {
+	export function goTo({ id, lat, long, location }: Location) {
 		const query = QueryString.stringify({
 			code: id,
 			lat,
@@ -28,7 +28,7 @@
 			refresh: 1,
 			distric_name: location,
 			tab: $page.url.searchParams.get('tab') ?? 'BULANAN'
-		})
+		});
 		goto(`/?${query}`);
 	}
 	function setKeyword(event: Event) {

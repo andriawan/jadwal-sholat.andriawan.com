@@ -8,7 +8,6 @@ Everything you need to build a Svelte project, powered by [`create-svelte`](http
 
 ## Creating a project
 
-
 If you're seeing this, you've probably already done this step. Congrats!
 
 ```bash
