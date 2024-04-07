@@ -23,10 +23,10 @@ export default class Aladhan extends BaseAPI implements PrayerTimesAPI {
 	}
 
 	async getListLokasi(): Promise<Location[]> {
-		let data = await this.fetcher.fetch(`/districs.json`);
-		let list: Location[] = data.map(
-			(val: { id: any; name: any; latitude: any; longitude: any }) => {
-				let lokasi: Location = {
+		const data = await this.fetcher.fetch(`/districs.json`);
+		const list: Location[] = data.map(
+			(val: { id: string; name: string; latitude: number; longitude: number }) => {
+				const lokasi: Location = {
 					id: val.id,
 					location: val.name,
 					lat: val.latitude,
@@ -37,13 +37,15 @@ export default class Aladhan extends BaseAPI implements PrayerTimesAPI {
 		);
 		return list;
 	}
+	
 	getLokasi(id: string): Promise<Location> {
 		throw new Error('Method not implemented.');
 	}
+
 	async getPrayerSchedule(params: PrayerScheduleParams): Promise<Schedule> {
 		const lists = await this.getPrayerScheduleList(params);
 		const schedule = lists.find((data) => {
-			return data.date.date === params.date ?? '-';
+			return parseInt(data.date.date) === parseInt(params.date ?? '-');
 		});
 		if (schedule) {
 			schedule.location = params.location ?? '-';
@@ -85,19 +87,20 @@ export default class Aladhan extends BaseAPI implements PrayerTimesAPI {
 		const yearMonth = `/${params.year}/${params.month}`;
 		let data = await this.fetcher.fetch(`${this.getFullUrl()}/calendar${yearMonth}?${query}`);
 		data = data.data;
-		let scheduleList: Schedule[] = [];
+		const scheduleList: Schedule[] = [];
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		data?.forEach((jadwal: any) => {
-			let date: PrayerDate = {
+			const date: PrayerDate = {
 				full_date: jadwal.date.gregorian.date,
 				date: jadwal.date.gregorian.day
 			};
-			let coordinate: Coordinate = {
+			const coordinate: Coordinate = {
 				lat: jadwal.meta.latitude,
 				long: jadwal.meta.longitude,
 				bujur: '-',
 				lintang: '-'
 			};
-			let prayerSchedule: PrayerSchedule = {
+			const prayerSchedule: PrayerSchedule = {
 				imsak: jadwal.timings.Imsak,
 				subuh: jadwal.timings.Fajr,
 				terbit: jadwal.timings.Sunrise,
@@ -107,7 +110,7 @@ export default class Aladhan extends BaseAPI implements PrayerTimesAPI {
 				maghrib: jadwal.timings.Maghrib,
 				isya: jadwal.timings.Isha
 			};
-			let schedule: Schedule = {
+			const schedule: Schedule = {
 				id: jadwal.date.gregorian.day,
 				location: '-',
 				area: '-',
