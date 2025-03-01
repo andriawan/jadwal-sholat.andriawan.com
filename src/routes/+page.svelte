@@ -135,5 +135,13 @@
 {:else if monthlySchedule && tab === 'BULANAN'}
 	<TablePrayerMonthly todaySchedule={schedule} schedule={monthlySchedule} />
 {:else}
-	<p class="text-center"><span class="loading loading-spinner loading-lg" /></p>
+	<div class="flex w-full py-6 px-4 flex-col gap-6">
+		{#each Array(8) as _, i}
+			<div class="flex items-center">
+				<div class="skeleton h-6 w-[25%]" />
+				<div class="flex-1" />
+				<div class="skeleton h-6 w-[25%]" />
+			</div>
+		{/each}
+	</div>
 {/if}

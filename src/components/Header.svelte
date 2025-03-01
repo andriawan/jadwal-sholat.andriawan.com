@@ -105,7 +105,10 @@
 
 	onMount(async () => {
 		queryParams = $page.url.searchParams.toString();
-		colorScheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+		colorScheme =
+			window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+				? 'dark'
+				: 'light';
 		if (!document.documentElement.dataset.theme) {
 			document.documentElement.dataset.theme = colorScheme;
 		}
@@ -148,7 +151,6 @@
 		} else {
 			document.documentElement.dataset.theme = 'dark';
 			localStorage.setItem('theme', 'dark');
-
 		}
 	}
 </script>
@@ -190,7 +192,7 @@
 					>
 				</summary>
 				<ul
-					class="text-black dark:text-neutral-content p-2 shadow menu dropdown-content z-[1] bg-base-100 w-52"
+					class="text-black dark:text-neutral-content p-2 menu bg-neutral border rounded border-success dropdown-content z-[1] w-52"
 				>
 					<li><a href={`/area?tab=${stateTab}`}>Ganti Daerah</a></li>
 					<li><a href={`/about?${queryParams}`}>Tentang Aplikasi</a></li>
@@ -198,60 +200,84 @@
 			</details>
 		</div>
 	</div>
-	<div class="card-body items-center text-center">
-		<h2 class="card-title text-sm">
-			{schedule?.date.full_date ?? 'Loading...'}
-			({hijriDate})
-		</h2>
-		<h2 class="text-sm">
-			masuk waktu <span class="capitalize">{currentParyer ? currentParyer : 'Loading...'}</span> di {schedule?.location ??
-				'Loading...'}
-		</h2>
-		<h1 class="text-6xl animate-pulse">{currentHours}:{currentMinute}</h1>
-		<h1 class="text-sm md:text-lg">
-			<span class="badge badge-accent">{diffPrayer ? diffPrayer : '0 jam, 0 menit'}</span> menuju
-			<span class="capitalize badge badge-info"
-				>{!['terbit', 'imsak'].includes(nextPrayer)
-					? `sholat ${nextPrayer ? nextPrayer : 'Loading...'}`
-					: nextPrayer
-					? nextPrayer
-					: 'Loading...'}</span
-			>
-		</h1>
-		{#if hijriMonth === 'Ramadhan' && percentageFasting <= 100 && percentageFasting > 0}
-			<div class="pt-2 w-full">
-				<h1 class="text-lg">
-					Buka Puasa <span class="badge badge-accent"
-						>{diffFasting ? diffFasting : '0 jam, 0 menit'}</span
-					>
-				</h1>
-				<progress class="progress progress-accent" value={percentageFasting} max="100" />
-				<p>{percentageFasting}%</p>
+	{#if !nextPrayer}
+		<div class="card-body items-center text-center">
+			<div class="flex w-full flex-col gap-4">
+				<div class="flex items-center justify-center gap-4">
+					<div class="flex flex-col gap-4 w-full items-center">
+						<div class="skeleton h-4 w-[40%]" />
+						<div class="skeleton h-4 w-[60%]" />
+					</div>
+				</div>
+				<div class="skeleton h-32 w-full" />
+				<div class="flex gap-4 flex-col items-center">
+					<div class="skeleton h-4 w-full" />
+					<div class="skeleton h-4 w-[10%] text-center" />
+				</div>
+				<div class="flex -mx-4 -mb-6">
+					<div class="skeleton h-6 w-full" />
+					<div class="w-8"></div>
+					<div class="skeleton h-6 w-full" />
+				</div>
 			</div>
-		{/if}
-	</div>
-	<div class="tabs">
-		<button
-			on:click={() => {
-				stateTab = 'HARIAN';
-				dispatch('tab:update', 'HARIAN');
-				$page.url.searchParams.set('tab', 'HARIAN');
-				goto(`?${$page.url.searchParams.toString()}`);
-			}}
-			class={`text-white dark:text-neutral-content flex-1 tab tab-bordered ${
-				stateTab === 'HARIAN' ? 'tab-active' : ''
-			}`}>Harian</button
-		>
-		<button
-			on:click={() => {
-				stateTab = 'BULANAN';
-				dispatch('tab:update', 'BULANAN');
-				$page.url.searchParams.set('tab', 'BULANAN');
-				goto(`?${$page.url.searchParams.toString()}`);
-			}}
-			class={`text-white dark:text-neutral-content flex-1 tab tab-bordered ${
-				stateTab === 'BULANAN' ? 'tab-active' : ''
-			}`}>Bulanan</button
-		>
-	</div>
+		</div>
+	{:else}
+		<div class="card-body items-center text-center">
+			<h2 class="card-title text-sm">
+				{schedule?.date.full_date ?? 'Loading...'}
+				({hijriDate})
+			</h2>
+			<h2 class="text-sm">
+				masuk waktu <span class="capitalize">{currentParyer ? currentParyer : 'Loading...'}</span>
+				di {schedule?.location ?? 'Loading...'}
+			</h2>
+			<h1 class="text-6xl animate-pulse">{currentHours}:{currentMinute}</h1>
+			<h1 class="text-sm md:text-lg">
+				<span class="badge badge-accent">{diffPrayer ? diffPrayer : '0 jam, 0 menit'}</span>
+				menuju
+				<span class="capitalize badge badge-info"
+					>{!['terbit', 'imsak'].includes(nextPrayer)
+						? `sholat ${nextPrayer ? nextPrayer : 'Loading...'}`
+						: nextPrayer
+						? nextPrayer
+						: 'Loading...'}</span
+				>
+			</h1>
+			{#if hijriMonth === 'Ramadhan' && percentageFasting <= 100 && percentageFasting > 0}
+				<div class="pt-2 w-full">
+					<h1 class="text-lg">
+						Buka Puasa <span class="badge badge-accent"
+							>{diffFasting ? diffFasting : '0 jam, 0 menit'}</span
+						>
+					</h1>
+					<progress class="progress progress-accent" value={percentageFasting} max="100" />
+					<p>{percentageFasting}%</p>
+				</div>
+			{/if}
+		</div>
+		<div class="tabs">
+			<button
+				on:click={() => {
+					stateTab = 'HARIAN';
+					dispatch('tab:update', 'HARIAN');
+					$page.url.searchParams.set('tab', 'HARIAN');
+					goto(`?${$page.url.searchParams.toString()}`);
+				}}
+				class={`text-white dark:text-neutral-content flex-1 tab tab-bordered ${
+					stateTab === 'HARIAN' ? 'tab-active' : ''
+				}`}>Harian</button
+			>
+			<button
+				on:click={() => {
+					stateTab = 'BULANAN';
+					dispatch('tab:update', 'BULANAN');
+					$page.url.searchParams.set('tab', 'BULANAN');
+					goto(`?${$page.url.searchParams.toString()}`);
+				}}
+				class={`text-white dark:text-neutral-content flex-1 tab tab-bordered ${
+					stateTab === 'BULANAN' ? 'tab-active' : ''
+				}`}>Bulanan</button
+			>
+		</div>
+	{/if}
 </div>
